@@ -70,8 +70,13 @@ type Config struct {
 	ListBlocksConcurrency int  `yaml:"list_blocks_concurrency"`
 	// ListObjectsVersion selects the S3 list objects API version ("v1" or "v2"); defaults to v2.
 	// Set "v1" for S3-compatible stores that do not implement ListObjectsV2 pagination correctly.
-	ListObjectsVersion string    `yaml:"list_objects_version"`
-	SSE                SSEConfig `yaml:"sse"`
+	ListObjectsVersion string `yaml:"list_objects_version"`
+	// DisableMultipartUpload writes objects with a single PutObject instead of a multipart
+	// upload, for S3-compatible stores that do not implement the multipart upload API.
+	// The object is buffered to a temporary file (os.TempDir) while it is written, so it
+	// cannot exceed the 5 GiB single-PutObject limit, and part_size has no effect.
+	DisableMultipartUpload bool      `yaml:"disable_multipart_upload"`
+	SSE                    SSEConfig `yaml:"sse"`
 }
 
 func (cfg *Config) RegisterFlagsAndApplyDefaults(prefix string, f *flag.FlagSet) {
